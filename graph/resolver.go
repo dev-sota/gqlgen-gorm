@@ -1,7 +1,13 @@
 package graph
 
-// This file will not be regenerated automatically.
-//
-// It serves as dependency injection for your app, add any dependencies you require here.
+import "github.com/dev-sota/gqlgen-gorm/graph/generated"
 
 type Resolver struct{}
+
+func (r *Resolver) Mutation() generated.MutationResolver {
+	return &mutationResolver{r}
+}
+
+func (r *Resolver) Query() generated.QueryResolver {
+	return &queryResolver{r}
+}
