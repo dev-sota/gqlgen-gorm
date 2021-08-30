@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/99designs/gqlgen/handler"
@@ -10,6 +12,7 @@ import (
 	"github.com/dev-sota/gqlgen-gorm/graph/generated"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 const (
@@ -18,7 +21,19 @@ const (
 )
 
 func main() {
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	logger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold:             time.Second,
+			LogLevel:                  logger.Info,
+			IgnoreRecordNotFoundError: true,
+			Colorful:                  true,
+		},
+	)
+
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger,
+	})
 	if err != nil {
 		log.Fatalln(err)
 	}
