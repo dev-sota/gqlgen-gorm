@@ -2,7 +2,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -12,7 +11,14 @@ import (
 type mutationResolver struct{ *Resolver }
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	var m model.Todo
+	m.ID = timeStampID()
+	m.Text = input.Text
+
+	if err := r.Resolver.DB.Create(&m).Error; err != nil {
+		return "", err
+	}
+	return m.ID, nil
 }
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (string, error) {

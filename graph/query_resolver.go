@@ -2,7 +2,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/dev-sota/gqlgen-gorm/graph/model"
 )
@@ -12,39 +11,32 @@ type queryResolver struct {
 }
 
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	return []*model.Todo{
-		{
-			ID:   "001",
-			Text: "cleaning",
-			Done: false,
-			User: &model.User{
-				ID:   "user001",
-				Name: "Satoshi",
-			},
-		},
-		{
-			ID:   "002",
-			Text: "shopping",
-			Done: true,
-			User: &model.User{
-				ID:   "user002",
-				Name: "Ota",
-			},
-		},
-	}, nil
+	var ts []*model.Todo
+	if err := r.Resolver.DB.Find(&ts).Error; err != nil {
+		return nil, err
+	}
+	return ts, nil
 }
 
 func (r *queryResolver) Todo(ctx context.Context, id string) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented"))
+	var t model.Todo
+	if err := r.Resolver.DB.First(&t, id).Error; err != nil {
+		return nil, err
+	}
+	return &t, nil
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	var us []*model.User
+	if err := r.Resolver.DB.Find(&us).Error; err != nil {
+		return nil, err
+	}
+	return us, nil
 }
 
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
 	var u model.User
-	if err := r.Resolver.DB.Find(&u, id).Error; err != nil {
+	if err := r.Resolver.DB.First(&u, id).Error; err != nil {
 		return nil, err
 	}
 	return &u, nil

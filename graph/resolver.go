@@ -17,6 +17,10 @@ func (r *Resolver) Query() generated.QueryResolver {
 	return &queryResolver{r}
 }
 
+func (r *Resolver) Todo() generated.TodoResolver {
+	return &todoResolver{r}
+}
+
 func (r *Resolver) User() generated.UserResolver {
 	return &userResolver{r}
 }
