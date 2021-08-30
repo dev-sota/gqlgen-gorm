@@ -14,6 +14,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	var m model.Todo
 	m.ID = timeStampID()
 	m.Text = input.Text
+	m.UserID = input.UserID
 
 	if err := r.Resolver.DB.Create(&m).Error; err != nil {
 		return "", err
