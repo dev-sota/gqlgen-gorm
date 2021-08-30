@@ -43,5 +43,9 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 }
 
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	var u model.User
+	if err := r.Resolver.DB.Find(&u, id).Error; err != nil {
+		return nil, err
+	}
+	return &u, nil
 }
