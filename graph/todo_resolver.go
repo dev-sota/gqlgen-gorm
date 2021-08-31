@@ -3,6 +3,7 @@ package graph
 import (
 	"context"
 
+	"github.com/dev-sota/gqlgen-gorm/dataloader/graph"
 	"github.com/dev-sota/gqlgen-gorm/graph/model"
 )
 
@@ -12,11 +13,5 @@ func (r *todoResolver) User(ctx context.Context, obj *model.Todo) (*model.User, 
 	if obj == nil {
 		return nil, nil
 	}
-
-	var u model.User
-	err := r.Resolver.DB.First(&u).Error
-	if err != nil {
-		return nil, err
-	}
-	return &u, nil
+	return graph.For(ctx).UserById.Load(obj.UserID)
 }

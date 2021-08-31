@@ -3,6 +3,7 @@ package graph
 import (
 	"context"
 
+	"github.com/dev-sota/gqlgen-gorm/dataloader/graph"
 	"github.com/dev-sota/gqlgen-gorm/graph/model"
 )
 
@@ -14,12 +15,5 @@ func (r *userResolver) Todos(ctx context.Context, obj *model.User) ([]*model.Tod
 	if obj == nil {
 		return []*model.Todo{}, nil
 	}
-	var ts []*model.Todo
-
-	err := r.Resolver.DB.Where("user_id = ?", obj.ID).Find(&ts).Error
-	if err != nil {
-		return nil, err
-	}
-
-	return ts, nil
+	return graph.For(ctx).TodosByUserIDs.Load(obj.ID)
 }

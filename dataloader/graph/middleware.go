@@ -30,7 +30,7 @@ func Middleware(db *gorm.DB, next http.Handler) http.Handler {
 						args[i] = i
 					}
 
-					res, err := db.Exec("SELECT * FROM users WHERE id IN (?)", ids).Rows()
+					res, err := db.Raw("SELECT * FROM users WHERE id IN ?", ids).Rows()
 					if err != nil {
 						panic(err)
 					}
@@ -62,7 +62,7 @@ func Middleware(db *gorm.DB, next http.Handler) http.Handler {
 						return nil, nil
 					}
 
-					res, err := db.Exec("SELECT * FROM todos WHERE user_id IN (?)", userIDs).Rows()
+					res, err := db.Raw("SELECT * FROM todos WHERE user_id IN ?", userIDs).Rows()
 					if err != nil {
 						panic(err)
 					}
