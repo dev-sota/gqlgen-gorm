@@ -6,8 +6,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/99designs/gqlgen/handler"
+	dataloader "github.com/dev-sota/gqlgen-gorm/dataloader/graph"
 	"github.com/dev-sota/gqlgen-gorm/graph"
 	"github.com/dev-sota/gqlgen-gorm/graph/generated"
 	"gorm.io/driver/mysql"
@@ -38,10 +39,22 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	srv := handler.GraphQL(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{DB: db}}))
-
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	http.Handle(
+		"/query",
+		dataloader.Middleware(
+			db,
+			handler.NewDefaultServer(
+				generated.NewExecutableSchema(
+					generated.Config{
+						Resolvers: &graph.Resolver{
+							DB: db,
+						},
+					},
+				),
+			),
+		),
+	)
 
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
